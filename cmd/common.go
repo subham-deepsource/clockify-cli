@@ -13,6 +13,7 @@ import (
 	"github.com/lucassabreu/clockify-cli/api/dto"
 	"github.com/lucassabreu/clockify-cli/cmd/completion"
 	"github.com/lucassabreu/clockify-cli/internal/output"
+	"github.com/lucassabreu/clockify-cli/reportsapi"
 	"github.com/lucassabreu/clockify-cli/ui"
 	stackedErrors "github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -29,6 +30,25 @@ var nowTimeFormat = "now"
 func withClockifyClient(fn func(cmd *cobra.Command, args []string, c *api.Client) error) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		c, err := getAPIClient()
+		if err != nil {
+			return err
+		}
+
+		return fn(cmd, args, c)
+	}
+}
+
+func withClockifyReportsClient(fn func(cmd *cobra.Command, args []string, c *reportsapi.ReportsClient) error) func(*cobra.Command, []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		c, err := reportsapi.NewReportsClient(viper.GetString(TOKEN))
+		if err != nil {
+			return err
+		}
+
+		if viper.GetBool("debug") {
+			c.Logger = log.New(os.Stdout, "DEBUG - reportsapi - ", log.LstdFlags)
+		}
+
 		if err != nil {
 			return err
 		}
@@ -72,7 +92,7 @@ func getAPIClient() (*api.Client, error) {
 	}
 
 	if viper.GetBool("debug") {
-		c.Logger = log.New(os.Stdout, "DEBUG ", log.LstdFlags)
+		c.Logger = log.New(os.Stdout, "DEBUG - api - ", log.LstdFlags)
 	}
 
 	return c, err
