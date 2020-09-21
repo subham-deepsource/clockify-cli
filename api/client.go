@@ -9,7 +9,7 @@ import (
 
 	"github.com/lucassabreu/clockify-cli/api/dto"
 	"github.com/lucassabreu/clockify-cli/http"
-	stackedErrors "github.com/pkg/errors"
+	"github.com/pkg/errors"
 )
 
 // baseURL is the Clockify API base URL
@@ -334,7 +334,7 @@ func (c *Client) GetTag(p GetTagParam) (*dto.Tag, error) {
 		}
 	}
 
-	return nil, stackedErrors.Errorf("tag %s not found on workspace %s", p.TagID, p.Workspace)
+	return nil, errors.Errorf("tag %s not found on workspace %s", p.TagID, p.Workspace)
 }
 
 // GetProjectParam params to get a Project
