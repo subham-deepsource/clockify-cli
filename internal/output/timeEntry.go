@@ -36,7 +36,7 @@ const (
 )
 
 func colorToTermColor(hex string) []int {
-	if len(hex) == 0 {
+	if hex == "" {
 		return []int{}
 	}
 
